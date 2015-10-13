@@ -75,6 +75,7 @@ public class CrxTest {
 
             for(int i = 0; i < instances.length; i++) {
                 instances[i].setLabel(new Instance(labels[i].getData().get(0)));
+            	//instances[i].setLabel(new Instance(labels[i].getData()));
             }
 
             return instances;
