@@ -14,7 +14,7 @@
 	Replace the * with SA, GA, or RHC depending on what you're looking for.
 
 
-
+6.  To find the sum of swuared error for the ANN used in assignment 1 luanch weka.  Use the tictactoe_training.arff file that is provided to train a MultiLayerPerceptron.  Set the MultiLayerPerceptron hidden layers to 7.  After training the net use the tictactoe_test.arff file as a test set.  The GUI will show a sum of squared errors in its output.
 
 
 
@@ -23,6 +23,23 @@
 
 References:
 
-1)  Code used to generate weights for neural network was obtained from Adam Acosta and Pushkar in our class off the Piazza forums.
+1.  The Chess Data set is the Chess (King-Rook vs King-Pawn) Data set obtained from the UCI Repository at 
+	Lichman, M. (2013). UCI Machine Learning Repository [http://archive.ics.uci.edu/ml]. Irvine, CA: University of California, School of Information and Computer Science
 
-2)  Code used to for Random hill climbing, genetic algs, simulated annealing, and MIMIC was obtained from Pushkar's ABAGAIL libraries on github.
+	-The specific URL for this data set is
+	 http://archive.ics.uci.edu/ml/datasets/Chess+%28King-Rook+vs.+King-Pawn%29	
+	 
+2.  The Tic Tac Toe set is the Tic-Tac_toe Endgame Data Set obtain from the UCI Repository at
+	Lichman, M. (2013). UCI Machine Learning Repository [http://archive.ics.uci.edu/ml]. Irvine, CA: University of California, School of Information and Computer Science	
+
+	-The specific URL for this data set is
+	 http://archive.ics.uci.edu/ml/datasets/Tic-Tac-Toe+Endgame
+	 
+3.  The Weka Java API was used to implement the algorithms.  The API can be found at 
+		http://weka.sourceforge.net/doc.stable/
+		
+4.  Machine Learning, Tom Mitchell, McGraw Hill, 1997
+
+5.  Code used to generate weights for neural network was obtained from Adam Acosta and Pushkar in our class off the Piazza forums.
+
+6.  Code used to for Random hill climbing, genetic algs, simulated annealing, and MIMIC was obtained from Pushkar's ABAGAIL libraries on github.

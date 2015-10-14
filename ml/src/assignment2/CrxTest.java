@@ -35,8 +35,8 @@ public class CrxTest {
 //	private static Instance[] trainInstances = initializeInstances("train.csv", "train_labels.txt");
 //	private static Instance[] testInstances = initializeInstances("test.txt", "test_labels.txt");
 
-    private static int inputLayer = 10, hiddenLayer = 2, outputLayer = 1;
-    //private static int inputLayer = 27, hiddenLayer = 7, outputLayer = 1;
+    //private static int inputLayer = 10, hiddenLayer = 2, outputLayer = 2;
+    private static int inputLayer = 10, hiddenLayer = 7, outputLayer = 1;
     private static BackPropagationNetworkFactory factory = new BackPropagationNetworkFactory();
     
     private static ErrorMeasure measure = new SumOfSquaresError();
@@ -88,7 +88,7 @@ public class CrxTest {
     public static void main(String[] args) throws FileNotFoundException {
     	//String results = "";
        // int it = args.length > 0 ? Integer.parseInt(args[0]): 1000;
-    	int it = 7000;
+    	int it = 500;
     	PrintWriter rhcOut = new PrintWriter("RHC_train_error.dat");
     	PrintWriter saOut = new PrintWriter("SA_train_error.dat");
     	PrintWriter gaOut = new PrintWriter("GA_train_error.dat");
@@ -102,7 +102,7 @@ public class CrxTest {
     	PrintWriter saOutTestTime = new PrintWriter("SA_test_time.dat");
     	PrintWriter gaOutTestTime = new PrintWriter("GA_test_time.dat");
     	
-    	while(it<=7000){
+    	while(it<=6000){
         for(int i = 0; i < oa.length; i++) {
             networks[i] = factory.createClassificationNetwork(
                 new int[] {inputLayer, hiddenLayer, outputLayer},
@@ -146,15 +146,15 @@ public class CrxTest {
 
             results +=  oaNames[i] + "," + it + "," + df.format(incorrect / (correct + incorrect)) + ","; 
             
-//            if (i == 0){
-//            	rhcOut.println(it + "\t" + df.format(incorrect / (correct + incorrect)));
-//            }
-//            if (i == 1){
-//            	saOut.println(it + "\t" + df.format(incorrect / (correct + incorrect)));
-//            }
-//            if (i == 2){
-//            	gaOut.println(it + "\t" + df.format(incorrect / (correct + incorrect)));
-//            }
+            if (i == 0){
+            	rhcOut.println(it + "\t" + df.format(incorrect / (correct + incorrect)));
+            }
+            if (i == 1){
+            	saOut.println(it + "\t" + df.format(incorrect / (correct + incorrect)));
+            }
+            if (i == 2){
+            	gaOut.println(it + "\t" + df.format(incorrect / (correct + incorrect)));
+            }
 
             correct = 0;
             incorrect = 0;
@@ -177,21 +177,21 @@ public class CrxTest {
             results += df.format(incorrect / (correct + incorrect)) + ","
                      + df.format(trainingTime) + "," + df.format(testingTime) + "\n";
             
-//            if (i == 0){
-//            	rhcOutTest.println(it + "\t" + df.format(incorrect / (correct + incorrect)));
-//            	rhcOutTestTime.println(it + "\t" + df.format(testingTime));
-//            	rhcOutTime.println(it + "\t" + df.format(trainingTime));
-//            }
-//            if (i == 1){
-//            	saOutTest.println(it + "\t" + df.format(incorrect / (correct + incorrect)));
-//            	saOutTestTime.println(it + "\t" + df.format(testingTime));
-//            	saOutTime.println(it + "\t" + df.format(trainingTime));
-//            }
-//            if (i == 2){
-//            	gaOutTest.println(it + "\t" + df.format(incorrect / (correct + incorrect)));
-//            	gaOutTestTime.println(it + "\t" + df.format(testingTime));
-//            	gaOutTime.println(it + "\t" + df.format(trainingTime));
-//            }
+            if (i == 0){
+            	rhcOutTest.println(it + "\t" + df.format(incorrect / (correct + incorrect)));
+            	rhcOutTestTime.println(it + "\t" + df.format(testingTime));
+            	rhcOutTime.println(it + "\t" + df.format(trainingTime));
+            }
+            if (i == 1){
+            	saOutTest.println(it + "\t" + df.format(incorrect / (correct + incorrect)));
+            	saOutTestTime.println(it + "\t" + df.format(testingTime));
+            	saOutTime.println(it + "\t" + df.format(trainingTime));
+            }
+            if (i == 2){
+            	gaOutTest.println(it + "\t" + df.format(incorrect / (correct + incorrect)));
+            	gaOutTestTime.println(it + "\t" + df.format(testingTime));
+            	gaOutTime.println(it + "\t" + df.format(trainingTime));
+            }
 
         }
 
