@@ -44,7 +44,7 @@ public class NQueensTest {
     	PrintWriter saTimeOut = new PrintWriter("SA_queen_time.dat");
     	PrintWriter gaTimeOut = new PrintWriter("GA_queen_time.dat");
     	PrintWriter mimicTimeOut = new PrintWriter("MIM_queen_time.dat");
-    	int N = 10;
+    	int N = 8;
     	
     	for (int j=0; j<10; j++){
     		
@@ -70,7 +70,7 @@ public class NQueensTest {
         fit.train();
         System.out.println("RHC: " + ef.value(rhc.getOptimal()));
         System.out.println("RHC: Board Position: ");
-//      s  System.out.println(ef.boardPositions());
+        System.out.println(ef.boardPositions());
         System.out.println("Time : "+ (System.currentTimeMillis() - starttime));
         
         rhcTimeOut.println(N + "\t" + (System.currentTimeMillis() - starttime));
