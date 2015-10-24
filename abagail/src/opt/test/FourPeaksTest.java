@@ -89,7 +89,7 @@ public class FourPeaksTest {
 			rhcTime = rhcTime + System.currentTimeMillis() - starttime;
 			rhcAv = rhcAv + ef.value(rhc.getOptimal());
 			
-			SimulatedAnnealing sa = new SimulatedAnnealing(1E11, .95, hcp);
+			SimulatedAnnealing sa = new SimulatedAnnealing(1E11, .05, hcp);
 			fit = new FixedIterationTrainer(sa, 200000);
 			starttime = System.currentTimeMillis();
 			fit.train();
@@ -110,8 +110,8 @@ public class FourPeaksTest {
 			gaTime = gaTime + System.currentTimeMillis() - starttime;
 			gaAv = gaAv + ef.value(ga.getOptimal());
 			
-			MIMIC mimic = new MIMIC(200, 20, pop);
-			fit = new FixedIterationTrainer(mimic, 1000);
+			MIMIC mimic = new MIMIC(2000, 20, pop);
+			fit = new FixedIterationTrainer(mimic, 1);
 			starttime = System.currentTimeMillis();
 			fit.train();
 			System.out.println("MIMIC: " + ef.value(mimic.getOptimal()));
