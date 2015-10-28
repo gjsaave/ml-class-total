@@ -1,0 +1,1 @@
+1.  Setup IDE to allow weka imports.  I used Eclipse.  If you want to allow weka imports you must add them to the java build path under preferences.  Or you can use the command line, in which case, you'll need to add the weka api to your class path.  You will also need the jars necessary to import Java.io and java.net.URL  
