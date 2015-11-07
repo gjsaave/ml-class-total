@@ -150,98 +150,92 @@ public class ChessSet3 {
 		MultilayerPerceptron mlp = new MultilayerPerceptron(); 
 		mlp.setOptions(Utils.splitOptions("-L 0.3 -M 0.2 -N 100 -V 0 -S 0 -E 20 -H 2"));
 		PrintWriter out = new PrintWriter("ANNTrainingPCA.dat");
-//		for (int i=9; i>-1; i--){
-//			int index = 10-i;
-//			Instances interData = setPercent(train, i);
-//			Instances finalData = prinComp(interData);
-//			trainData(finalData, out, mlp, index);
-//		}	
-//		out.close();
-//		
-//		out = new PrintWriter("ANNTestPCA.dat");	
-//		for (int i=9; i>-1; i--){
-//			int index = 10-i;
-//			Instances interData = setPercent(train, i);
-//			Instances finalData = prinComp(interData);
-//			testData(finalData, out, mlp, index);
-//		}	
+		for (int i=9; i>-1; i--){
+			int index = 10-i;
+			Instances interData = setPercent(train, i);
+			Instances finalData = prinComp(interData);
+			trainData(finalData, out, mlp, index);
+		}	
 		out.close();
-//		
-//		out = new PrintWriter("ANNTrainingICA.dat");
-//		for (int i=9; i>-1; i--){
-//			int index = 10-i;
-//			Instances interData = setPercent(train, i);
-//			Instances pcaData = prinComp(interData);
-//			Instances finalData = indepComp(pcaData);
-//			trainData(finalData, out, mlp, index);
-//		}	
-//		out.close();
-//		
-//		out = new PrintWriter("ANNTestICA.dat");	
-//		for (int i=9; i>-1; i--){
-//			int index = 10-i;
-//			Instances interData = setPercent(train, i);
-//			Instances pcaData = prinComp(interData);
-//			Instances finalData = indepComp(pcaData);
-//			testData(finalData, out, mlp, index);
-//		}	
-//		out.close();
-//		
-//		out = new PrintWriter("ANNTrainingRP.dat");
-//		for (int i=9; i>-1; i--){
-//			int index = 10-i;
-//			Instances interData = setPercent(train, i);;
-//			Instances finalData = randProj(interData);
-//			trainData(finalData, out, mlp, index);
-//		}	
-//		out.close();
-//		
-//		out = new PrintWriter("ANNTestRP.dat");	
-//		for (int i=9; i>-1; i--){
-//			int index = 10-i;
-//			Instances interData = setPercent(train, i);
-//			Instances finalData = randProj(interData);
-//			testData(finalData, out, mlp, index);
-//		}	
-//		out.close();
-//		
-//		out = new PrintWriter("ANNTrainingTPP.dat");
-//		for (int i=9; i>-1; i--){
-//			int index = 10-i;
-//			Instances finalData = setPercent(tppTrain, i);;		
-//			trainData(finalData, out, mlp, index);
-//		}	
-//		out.close();
-//		
-//		out = new PrintWriter("ANNTestTPP.dat");	
-//		for (int i=9; i>-1; i--){
-//			int index = 10-i;
-//			Instances finalData = setPercent(tppTrain, i);		
-//			testData(finalData, out, mlp, index);
-//		}	
-//		out.close();
-//		
-//		out = new PrintWriter("ANNTrainingErr.dat");
-//		for (int i=9; i>-1; i--){
-//			int index = 10-i;
-//			Instances finalData = setPercent(train, i);;		
-//			trainData(finalData, out, mlp, index);
-//		}	
-//		out.close();
-//		
-//		out = new PrintWriter("ANNTestErr.dat");	
-//		for (int i=9; i>-1; i--){
-//			int index = 10-i;
-//			Instances finalData = setPercent(train, i);		
-//			testData(finalData, out, mlp, index);
-//		}	
-//		out.close();
 		
+		out = new PrintWriter("ANNTestPCA.dat");	
+		for (int i=9; i>-1; i--){
+			int index = 10-i;
+			Instances interData = setPercent(train, i);
+			Instances finalData = prinComp(interData);
+			testData(finalData, out, mlp, index);
+		}	
+		out.close();
 		
+		out = new PrintWriter("ANNTrainingICA.dat");
+		for (int i=9; i>-1; i--){
+			int index = 10-i;
+			Instances interData = setPercent(train, i);
+			Instances pcaData = prinComp(interData);
+			Instances finalData = indepComp(pcaData);
+			trainData(finalData, out, mlp, index);
+		}	
+		out.close();
 		
+		out = new PrintWriter("ANNTestICA.dat");	
+		for (int i=9; i>-1; i--){
+			int index = 10-i;
+			Instances interData = setPercent(train, i);
+			Instances pcaData = prinComp(interData);
+			Instances finalData = indepComp(pcaData);
+			testData(finalData, out, mlp, index);
+		}	
+		out.close();
 		
+		out = new PrintWriter("ANNTrainingRP.dat");
+		for (int i=9; i>-1; i--){
+			int index = 10-i;
+			Instances interData = setPercent(train, i);;
+			Instances finalData = randProj(interData);
+			trainData(finalData, out, mlp, index);
+		}	
+		out.close();
 		
+		out = new PrintWriter("ANNTestRP.dat");	
+		for (int i=9; i>-1; i--){
+			int index = 10-i;
+			Instances interData = setPercent(train, i);
+			Instances finalData = randProj(interData);
+			testData(finalData, out, mlp, index);
+		}	
+		out.close();
 		
+		out = new PrintWriter("ANNTrainingTPP.dat");
+		for (int i=9; i>-1; i--){
+			int index = 10-i;
+			Instances finalData = setPercent(tppTrain, i);;		
+			trainData(finalData, out, mlp, index);
+		}	
+		out.close();
+		
+		out = new PrintWriter("ANNTestTPP.dat");	
+		for (int i=9; i>-1; i--){
+			int index = 10-i;
+			Instances finalData = setPercent(tppTrain, i);		
+			testData(finalData, out, mlp, index);
+		}	
+		out.close();
+		
+		out = new PrintWriter("ANNTrainingErr.dat");
+		for (int i=9; i>-1; i--){
+			int index = 10-i;
+			Instances finalData = setPercent(train, i);;		
+			trainData(finalData, out, mlp, index);
+		}	
+		out.close();
+		
+		out = new PrintWriter("ANNTestErr.dat");	
+		for (int i=9; i>-1; i--){
+			int index = 10-i;
+			Instances finalData = setPercent(train, i);		
+			testData(finalData, out, mlp, index);
+		}	
+		out.close();	
 		
 		out = new PrintWriter("ANNTrainingKMeans.dat");
 		for (int i=20; i>1; i--){
