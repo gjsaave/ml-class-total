@@ -160,7 +160,7 @@ public class ValueIteration extends DynamicProgramming implements Planner {
 			
 		}
 		
-		DPrint.cl(this.debugCode, "Passes: " + i);
+		DPrint.cl(this.debugCode, "Passes(number of evals needed to find policy): " + i);
 		
 		this.hasRunVI = true;
 		

@@ -7,5 +7,6 @@
 	<classpathentry kind="lib" path="C:/Program Files/Weka-3-7/weka-src.jar"/>
 	<classpathentry kind="lib" path="C:/Users/gary/wekafiles/packages/TPP/TPP.jar"/>
 	<classpathentry kind="lib" path="C:/Users/gary/wekafiles/packages/StudentFilters/StudentFilters.jar"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/BURLAP"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
