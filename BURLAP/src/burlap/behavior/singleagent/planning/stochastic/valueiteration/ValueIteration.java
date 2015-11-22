@@ -64,6 +64,8 @@ public class ValueIteration extends DynamicProgramming implements Planner {
 	
 	protected boolean												hasRunVI = false;
 	
+	protected int passes = 0;
+	
 	
 	/**
 	 * Initializers the valueFunction.
@@ -162,8 +164,18 @@ public class ValueIteration extends DynamicProgramming implements Planner {
 		
 		DPrint.cl(this.debugCode, "Passes(number of evals needed to find policy): " + i);
 		
+		setPasses(i);
+		
 		this.hasRunVI = true;
 		
+	}
+	
+	public int returnPasses(){
+		return passes;
+	}
+	
+	public void setPasses(int passes){
+		this.passes = passes;
 	}
 	
 	

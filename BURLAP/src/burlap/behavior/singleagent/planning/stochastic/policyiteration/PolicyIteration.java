@@ -66,6 +66,8 @@ public class PolicyIteration extends DynamicProgramming implements Planner {
 	 */
 	protected int													totalValueIterations = 0;
 	
+	protected int iterations = 0;
+	
 	
 	/**
 	 * Initializes the valueFunction.
@@ -181,11 +183,20 @@ public class PolicyIteration extends DynamicProgramming implements Planner {
 
 		DPrint.cl(this.debugCode, "Total policy iterations: " + iterations);
 		this.totalPolicyIterations += iterations;
+		
+		setIterations(iterations);
 
 		return (GreedyQPolicy)this.evaluativePolicy;
 
 	}
 	
+	public void setIterations(int iterations){
+		this.iterations = iterations;
+	}
+	
+	public int returnIterations(){
+		return iterations;
+	}
 	
 	@Override
 	public void resetSolver(){
