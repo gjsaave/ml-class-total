@@ -292,12 +292,12 @@ public class BasicBehavior {
 		BasicBehavior example = new BasicBehavior();
 		String outputPath = "output/";
 
-		example.BFSExample(outputPath);
+		//example.BFSExample(outputPath);
 		//example.DFSExample(outputPath);
 		//example.AStarExample(outputPath);
 		//example.valueIterationExample(outputPath);
 		//example.qLearningExample(outputPath);
-		//example.sarsaLearningExample(outputPath);
+		example.sarsaLearningExample(outputPath);
 
 		//example.experimentAndPlotter();
 

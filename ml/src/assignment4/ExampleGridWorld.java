@@ -9,14 +9,24 @@ import java.util.ArrayList;
 import java.util.List;
 
 import burlap.behavior.policy.Policy;
+import burlap.behavior.singleagent.EpisodeAnalysis;
 import burlap.behavior.singleagent.auxiliary.StateReachability;
+import burlap.behavior.singleagent.auxiliary.performance.LearningAlgorithmExperimenter;
+import burlap.behavior.singleagent.auxiliary.performance.PerformanceMetric;
+import burlap.behavior.singleagent.auxiliary.performance.TrialMode;
 import burlap.behavior.singleagent.auxiliary.valuefunctionvis.ValueFunctionVisualizerGUI;
+import burlap.behavior.singleagent.learning.LearningAgent;
+import burlap.behavior.singleagent.learning.LearningAgentFactory;
+import burlap.behavior.singleagent.learning.tdmethods.QLearning;
+import burlap.behavior.singleagent.learning.tdmethods.SarsaLam;
 import burlap.behavior.singleagent.planning.Planner;
 import burlap.behavior.singleagent.planning.stochastic.policyiteration.PolicyIteration;
 import burlap.behavior.singleagent.planning.stochastic.valueiteration.ValueIteration;
 import burlap.behavior.valuefunction.ValueFunction;
 import burlap.domain.singleagent.gridworld.GridWorldDomain;
 import burlap.oomdp.auxiliary.DomainGenerator;
+import burlap.oomdp.auxiliary.stateconditiontest.StateConditionTest;
+import burlap.oomdp.auxiliary.stateconditiontest.TFGoalCondition;
 import burlap.oomdp.core.Attribute;
 import burlap.oomdp.core.Domain;
 import burlap.oomdp.core.ObjectClass;
@@ -31,6 +41,7 @@ import burlap.oomdp.singleagent.FullActionModel;
 import burlap.oomdp.singleagent.GroundedAction;
 import burlap.oomdp.singleagent.RewardFunction;
 import burlap.oomdp.singleagent.SADomain;
+import burlap.oomdp.singleagent.common.GoalBasedRF;
 import burlap.oomdp.singleagent.common.SimpleAction;
 import burlap.oomdp.singleagent.environment.SimulatedEnvironment;
 import burlap.oomdp.singleagent.explorer.VisualExplorer;
@@ -55,6 +66,7 @@ public class ExampleGridWorld implements DomainGenerator {
 	public static final String ACTIONWEST = "west";
 
 	public static final String PFAT = "at";
+	
 
 	// ordered so first dimension is x
 	protected int[][] map = new int[][] 
@@ -594,17 +606,60 @@ public class ExampleGridWorld implements DomainGenerator {
 
 	}
 	
+	public void sarsaLearningExample(String outputPath, Domain domain, HashableStateFactory hf, double gamma,
+			double learningRate, SimulatedEnvironment env, PrintWriter out, PrintWriter outIter) {
+		
+		double start = System.currentTimeMillis();
+		LearningAgent agent = new SarsaLam(domain, gamma, hf, 0., learningRate, 0.3);
+
+		// run learning for 50 episodes
+		for (int i = 0; i < 100; i++) {
+			EpisodeAnalysis ea = agent.runLearningEpisode(env);
+
+			ea.writeToFile(outputPath + "sarsa_" + i);
+			System.out.println(i + ": " + ea.maxTimeStep());
+
+			// reset environment for next learning episode
+			env.resetEnvironment();
+			
+		}
+		
+		double end = System.currentTimeMillis() - start;
+		out.println(gamma + "\t" + end);
+	}
+	
+	public void experimenterAndPlotter(SimulatedEnvironment env, StateConditionTest goalCondition){
+		
+		//different reward function for more interesting results
+		((SimulatedEnvironment)env).setRf(new GoalBasedRF(goalCondition, 5.0, -0.1));
+
+
+	}
+	
+	public void learnPlots(SimulatedEnvironment env, LearningAgentFactory sarsaLearningFactory,
+			LearningAgentFactory sarsaLearningFactory2) {
+		LearningAlgorithmExperimenter exp = new LearningAlgorithmExperimenter(env, 10, 100, sarsaLearningFactory,
+				sarsaLearningFactory2);
+		exp.setUpPlottingConfiguration(500, 250, 2, 1000, TrialMode.MOSTRECENTANDAVERAGE,
+				PerformanceMetric.CUMULATIVESTEPSPEREPISODE, PerformanceMetric.AVERAGEEPISODEREWARD);
+
+		exp.startExperiment();
+		exp.writeStepAndEpisodeDataToCSV("expData");
+	}
+	
+	
 	
 
 	public static void main(String[] args) throws Exception{
 
 		ExampleGridWorld gen = new ExampleGridWorld();
-		Domain domain = gen.generateDomain();
+		final Domain domain = gen.generateDomain();
 		String outputPath = "output/"; // directory to record results
 		double gamma = 0.5;
 		double maxDelta = 0.01;
 		int maxEvaluationIterations = 1000;
 		int maxPolicyIterations = 100;
+		double learningRate = 0.1;
 		
 //		MyGridWorld example = new MyGridWorld();
 		
@@ -620,37 +675,91 @@ public class ExampleGridWorld implements DomainGenerator {
 //		TerminalFunction tf = new ExampleTF(87, 21);
 		RewardFunction rf = new ExampleRF(10, 10);
 		TerminalFunction tf = new ExampleTF(10, 10);
+		StateConditionTest goalCondition = new TFGoalCondition(tf);
 
 		SimulatedEnvironment env = new SimulatedEnvironment(domain, rf, tf, initialState);
 
 		// TerminalExplorer exp = new TerminalExplorer(domain, env);
 		// exp.explore();
-		HashableStateFactory hf = new SimpleHashableStateFactory();
+		final HashableStateFactory hf = new SimpleHashableStateFactory();
 
 		Visualizer v = gen.getVisualizer();
 		
 		VisualExplorer exp = new VisualExplorer(domain, env, v);
 		
+		/**
+		 * Create factories for Q-learning agent and SARSA agent to compare
+		 */
+
+		LearningAgentFactory qLearningFactory = new LearningAgentFactory() {
+			@Override
+			public String getAgentName() {
+				return "Q-Learning";
+			}
+
+			@Override
+			public LearningAgent generateAgent() {
+				return new QLearning(domain, 0.99, hf, 0.3, 0.1);
+			}
+		};
+
+		LearningAgentFactory sarsaLearningFactory = new LearningAgentFactory() {
+			@Override
+			public String getAgentName() {
+				return "Q = 0";
+			}
+
+			@Override
+			public LearningAgent generateAgent() {
+				return new SarsaLam(domain, 0.99, hf, 0.0, 0.1, 1.);
+			}
+		};
+		
+		LearningAgentFactory sarsaLearningFactory2 = new LearningAgentFactory() {
+			@Override
+			public String getAgentName() {
+				return "Q = 100";
+			}
+
+			@Override
+			public LearningAgent generateAgent() {
+				return new SarsaLam(domain, 0.99, hf, 100.0, 0.1, 1.);
+			}
+		};
+		
+		
+		
+		
+//		gen.learnPlots(env, sarsaLearningFactory, sarsaLearningFactory2);
+		
+
+		
 		PrintWriter out1 = new PrintWriter("VITime.dat");
 		PrintWriter out2 = new PrintWriter("PITime.dat");
 		PrintWriter out3 = new PrintWriter("VIIter.dat");
 		PrintWriter out4 = new PrintWriter("PIIter.dat");
+		PrintWriter out5 = new PrintWriter("SarsaTime.dat");
+		PrintWriter out6 = new PrintWriter("SarsaIter.dat");
 		
 		
-//		for (int i = 0; i < 6; i++) {
+		for (int i = 0; i < 6; i++) {
 
-			gen.valueIterationExample(outputPath, domain, initialState, rf, tf, hf, gamma, out1, out3);
+//			gen.valueIterationExample(outputPath, domain, initialState, rf, tf, hf, gamma, out1, out3);
 
 //			gen.policyIterationExample(outputPath, domain, initialState, rf, tf, hf, gamma, maxDelta,
 //					maxEvaluationIterations, maxPolicyIterations, out2, out4);
-//			
-//			gamma = gamma + 0.1;
-//		}
+		
+			gen.sarsaLearningExample(outputPath, domain, hf, gamma, learningRate, env, out5, out6);
+			
+			gamma = gamma + 0.1;
+		}
 		
 		out1.close();
 		out2.close();
 		out3.close();
 		out4.close();
+		out5.close();
+		out6.close();
 		
 		
 
@@ -659,7 +768,7 @@ public class ExampleGridWorld implements DomainGenerator {
 //		 exp.addKeyAction("d", ACTIONEAST);
 //		 exp.addKeyAction("a", ACTIONWEST);
 
-		exp.initGUI();
+//		exp.initGUI();
 
 	}
 
