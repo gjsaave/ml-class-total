@@ -1,6 +1,6 @@
 1.  BURLAP was used for this assignment.  Download it from https://github.com/jmacglashan/burlap
 
-2.  A few files in BURLAP were modified to allow the graphs to be made.  The classes modified are ValueIteration and PolicyIteration.  
+2.  A few files in BURLAP were modified to allow the graphs to be made.  The classes modified are ValueIteration, PolicyIteration, LearningAlgorithmExperimenter, Policy.  These are included in the submission.  
 
 3.  ExampleGridWorld was modified and has been included.  You can use this class to generate all the results and graphs shown in the analysis.  The small grid world is set as default.  If you want to use the large grid world comment out lines 61-71 and uncomment ...
 
@@ -17,4 +17,6 @@
 
  plot 'VITime.dat' u 1:2 smooth bezier title "VI",'PITime.dat' u 1:2 smooth bezier title "PI"
  
-	The first command will plot the iterations graph and the second command will plot the time graph.
+ plot 'VIReward.dat' u 1:2 smooth bezier title "VI",'PIReward.dat' u 1:2 smooth bezier title "PI"
+ 
+	The first command will plot the iterations graph and the second command will plot the time graph.  The third command will plot the reward graphs.  

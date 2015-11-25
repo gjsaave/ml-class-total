@@ -574,7 +574,8 @@ public class ExampleGridWorld implements DomainGenerator {
 		finalVITime = end + finalVITime;
 		System.out.println("end: " + end);
 		ValueIteration val = (ValueIteration) planner;
-		p.evaluateBehavior(initialState, rf, tf, totalR).writeToFile(outputPath + "vi");
+//		p.evaluateBehavior(initialState, rf, tf, totalR).writeToFile(outputPath + "vi");
+		p.evaluateBehavior(initialState, rf, tf, totalR);
 
 		// visualize the value function and policy.
 //		simpleValueFunctionVis((ValueFunction) planner, p, initialState, hf, domain);
@@ -605,7 +606,8 @@ public class ExampleGridWorld implements DomainGenerator {
 		System.out.println("end: " + end);
 		PolicyIteration pol = (PolicyIteration)planner;
 		
-		p.evaluateBehavior(initialState, rf, tf, totalR).writeToFile(outputPath + "pi");
+//		p.evaluateBehavior(initialState, rf, tf, totalR).writeToFile(outputPath + "pi");
+		p.evaluateBehavior(initialState, rf, tf, totalR);
 //		simpleValueFunctionVis((ValueFunction)planner, p, initialState, hf, domain);
 		
 		totalR = p.returnTotalReward();
@@ -680,7 +682,7 @@ public class ExampleGridWorld implements DomainGenerator {
 		ExampleGridWorld gen = new ExampleGridWorld();
 		final Domain domain = gen.generateDomain();
 		String outputPath = "output/"; // directory to record results
-		double gamma = 0.5;
+		double gamma = 0.98;
 		double maxDelta = 0.01;
 		int maxEvaluationIterations = 1000;
 		int maxPolicyIterations = 100;
@@ -777,9 +779,10 @@ public class ExampleGridWorld implements DomainGenerator {
 		for (int i = 0; i < 6; i++) {
 
 			for (int m = 0; m < 5; m++) {
-				totalVIReward = gen.valueIterationExample(outputPath, domain, initialState, rf, tf, hf, gamma, out1,
-						out3, out7) + totalVIReward;
-
+//				totalVIReward = gen.valueIterationExample(outputPath, domain, initialState, rf, tf, hf, gamma, out1,
+//						out3, out7) + totalVIReward;
+//				
+//
 				totalPIReward = gen.policyIterationExample(outputPath, domain, initialState, rf, tf, hf, gamma,
 						maxDelta, maxEvaluationIterations, maxPolicyIterations, out2, out4, out8) + totalPIReward;
 				
@@ -791,12 +794,13 @@ public class ExampleGridWorld implements DomainGenerator {
 			
 //			out7.println(gen.finalVITime / 10 + "\t" + totalVIReward / 10);
 //			out8.println(gen.finalPITime / 10 + "\t" + totalPIReward / 10);
-			out7.println(gamma + "\t" + totalVIReward / 10);
-			out8.println(gamma  + "\t" + totalPIReward / 10);
+			out7.println(gamma + "\t" + totalVIReward / 5);
+			out8.println(gamma  + "\t" + totalPIReward / 5);
 			out1.println(gamma + "\t" + finalVITime/10);
 			out2.println(gamma + "\t" + finalPITime/10);
 			out5.println(gamma + "\t" + finalSarsaTime/10);
-			gamma = gamma + 0.1;
+			System.out.println("%%%%%%%%%%%%%%%%%%%%%% gamma " + gamma);
+			gamma = gamma + 0.002;
 			totalVIReward = 0;
 			totalVIReward = 0;
 			totalPIReward = 0;

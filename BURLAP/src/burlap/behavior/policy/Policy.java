@@ -314,10 +314,14 @@ public abstract class Policy {
 	public EpisodeAnalysis evaluateBehavior(State s, RewardFunction rf, TerminalFunction tf, double totalR){
 		EpisodeAnalysis res = new EpisodeAnalysis();
 		res.addState(s); //add initial state
+		int count = 0;
 		
 		State cur = s;
 		while(!tf.isTerminal(cur)){
+//		while(count < 30000){
 			cur = this.myFollowAndRecordPolicy(res, cur, rf);
+//			System.out.println("got through follow and record");
+			count++;
 		}
 //		rOut.println(end + "\t" + totalReward);
 		
@@ -574,7 +578,7 @@ protected State myFollowAndRecordPolicy(EpisodeAnalysis ea, State cur, RewardFun
 			double r = rf.reward(cur, ga, next);
 			totalReward = totalReward + r;
 //			System.out.println("if :" + r);
-//			System.out.println(r);
+//			System.out.println(" got through if statement");
 			//record result
 			ea.recordTransitionTo(ga, next, r);
 		}
