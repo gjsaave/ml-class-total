@@ -1,5 +1,6 @@
 package burlap.behavior.policy;
 
+import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
@@ -8,9 +9,9 @@ import burlap.behavior.singleagent.EpisodeAnalysis;
 import burlap.behavior.singleagent.options.Option;
 import burlap.debugtools.RandomFactory;
 import burlap.oomdp.core.AbstractGroundedAction;
+import burlap.oomdp.core.TerminalFunction;
 import burlap.oomdp.core.TransitionProbability;
 import burlap.oomdp.core.states.State;
-import burlap.oomdp.core.TerminalFunction;
 import burlap.oomdp.singleagent.GroundedAction;
 import burlap.oomdp.singleagent.RewardFunction;
 import burlap.oomdp.singleagent.environment.Environment;
@@ -114,6 +115,7 @@ public abstract class Policy {
 
 	protected boolean evaluateDecomposesOptions = true;
 	protected boolean annotateOptionDecomposition = true;
+	protected double totalReward = 0;
 	
 	/**
 	 * This method will return an action sampled by the policy for the given state. If the defined policy is
@@ -297,6 +299,35 @@ public abstract class Policy {
 		return res;
 	}
 	
+//	public EpisodeAnalysis evaluateBehavior(State s, RewardFunction rf, TerminalFunction tf, PrintWriter rOut, double end){
+//		EpisodeAnalysis res = new EpisodeAnalysis();
+//		res.addState(s); //add initial state
+//		
+//		State cur = s;
+//		while(!tf.isTerminal(cur)){
+//			cur = this.followAndRecordPolicy(res, cur, rf, rOut, end);
+//		}
+////		rOut.println(end + "\t" + totalReward);
+//		return res;
+//	}
+	
+	public EpisodeAnalysis evaluateBehavior(State s, RewardFunction rf, TerminalFunction tf, double totalR){
+		EpisodeAnalysis res = new EpisodeAnalysis();
+		res.addState(s); //add initial state
+		
+		State cur = s;
+		while(!tf.isTerminal(cur)){
+			cur = this.myFollowAndRecordPolicy(res, cur, rf);
+		}
+//		rOut.println(end + "\t" + totalReward);
+		
+//		System.out.println("total!!!!!!!!!!!!!!!!!!!!!!!!!!!!!1" + totalReward);
+		return res;
+	}
+	
+	public double returnTotalReward(){
+		return totalReward;
+	}
 	
 	
 	/**
@@ -324,6 +355,7 @@ public abstract class Policy {
 		
 		return res;
 	}
+	
 	
 	/**
 	 * This method will return the an episode that results from following this policy from state s. The episode will terminate
@@ -482,7 +514,8 @@ public abstract class Policy {
 		if(ga.action.isPrimitive() || !this.evaluateDecomposesOptions){
 			next = ga.executeIn(cur);
 			double r = rf.reward(cur, ga, next);
-			
+			System.out.println("if :" + r);
+//			System.out.println(r);
 			//record result
 			ea.recordTransitionTo(ga, next, r);
 		}
@@ -496,7 +529,8 @@ public abstract class Policy {
 				GroundedAction cga = o.oneStepActionSelection(cur, ga);
 				next = cga.executeIn(cur);
 				double r = rf.reward(cur, cga, next);
-				
+				System.out.println("else : " + r);
+
 				if(annotateOptionDecomposition){
 					//setup a null action to record the option and primitive action taken
 					GroundedAction annotatedPrimitiveGA = new GroundedAnnotatedAction(ga.toString() + "(" + ns + ")", cga);
@@ -516,6 +550,67 @@ public abstract class Policy {
 			}while(o.continueFromState(cur, ga));
 			
 		}
+		
+		//return outcome state
+		return next;
+	}
+	
+protected State myFollowAndRecordPolicy(EpisodeAnalysis ea, State cur, RewardFunction rf){
+		
+		State next = null;
+		
+		//follow policy
+		AbstractGroundedAction aga = this.getAction(cur);
+		if(aga == null){
+			throw new PolicyUndefinedException();
+		}
+		if(!(aga instanceof GroundedAction)){
+			throw new RuntimeException("cannot folow policy for non-single agent actions");
+		}
+		GroundedAction ga = (GroundedAction)aga;
+		
+		if(ga.action.isPrimitive() || !this.evaluateDecomposesOptions){
+			next = ga.executeIn(cur);
+			double r = rf.reward(cur, ga, next);
+			totalReward = totalReward + r;
+//			System.out.println("if :" + r);
+//			System.out.println(r);
+			//record result
+			ea.recordTransitionTo(ga, next, r);
+		}
+		else{
+			//then we need to decompose the option
+			Option o = (Option)ga.action;
+			o.initiateInState(cur, ga);
+			int ns = 0;
+			do{
+				//do step of option
+				GroundedAction cga = o.oneStepActionSelection(cur, ga);
+				next = cga.executeIn(cur);
+				double r = rf.reward(cur, cga, next);
+				totalReward = totalReward + r;
+//				System.out.println("else : " + r);
+
+				if(annotateOptionDecomposition){
+					//setup a null action to record the option and primitive action taken
+					GroundedAction annotatedPrimitiveGA = new GroundedAnnotatedAction(ga.toString() + "(" + ns + ")", cga);
+					
+					//record it
+					ea.recordTransitionTo(annotatedPrimitiveGA, next, r);
+				}
+				else{
+					//otherwise just record the primitive that was taken
+					ea.recordTransitionTo(cga, next, r);
+				}
+				
+				cur = next;
+				ns++;
+				
+				
+			}while(o.continueFromState(cur, ga));
+			
+		}
+		
 		
 		//return outcome state
 		return next;

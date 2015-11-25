@@ -326,7 +326,7 @@ public class LearningAlgorithmExperimenter {
 		this.plotter.startNewTrial();
 		
 		for(int i = 0; i < this.trialLength; i++){
-			agent.runLearningEpisode(this.environmentSever, 10000);
+			agent.runLearningEpisode(this.environmentSever, 1000000);
 			this.plotter.endEpisode();
 			this.environmentSever.resetEnvironment();
 		}

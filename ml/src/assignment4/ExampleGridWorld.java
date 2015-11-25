@@ -67,6 +67,14 @@ public class ExampleGridWorld implements DomainGenerator {
 
 	public static final String PFAT = "at";
 	
+	public static double finalReward = 0;
+	
+	public static double finalVITime;
+	
+	public static double finalPITime;
+	
+	public static double finalSarsaTime;
+	
 
 	// ordered so first dimension is x
 	protected int[][] map = new int[][] 
@@ -497,10 +505,12 @@ public class ExampleGridWorld implements DomainGenerator {
 
 		int goalX;
 		int goalY;
+		
 
 		public ExampleRF(int goalX, int goalY) {
 			this.goalX = goalX;
 			this.goalY = goalY;
+			
 		}
 
 		@Override
@@ -513,8 +523,10 @@ public class ExampleGridWorld implements DomainGenerator {
 
 			// are they at goal location?
 			if (ax == this.goalX && ay == this.goalY) {
+				
 				return 30000.;
 			}
+			
 
 			return -1;
 		}
@@ -549,48 +561,59 @@ public class ExampleGridWorld implements DomainGenerator {
 
 	}
 
-	public void valueIterationExample(String outputPath, Domain domain, State initialState, RewardFunction rf,
-			TerminalFunction tf, HashableStateFactory hf, double gamma, PrintWriter out, PrintWriter outIter) throws Exception {
+	public double valueIterationExample(String outputPath, Domain domain, State initialState, RewardFunction rf,
+			TerminalFunction tf, HashableStateFactory hf, double gamma, PrintWriter out, PrintWriter outIter,
+			PrintWriter rOut) throws Exception {
 
+		double totalR = 0;
 		double start = System.currentTimeMillis();
 		System.out.println("start: " + start);
 		Planner planner = new ValueIteration(domain, rf, tf, gamma, hf, 0.001, 1000);
 		Policy p = planner.planFromState(initialState);
 		double end = System.currentTimeMillis() - start;
+		finalVITime = end + finalVITime;
 		System.out.println("end: " + end);
-		ValueIteration val = (ValueIteration)planner;
-//		p.evaluateBehavior(initialState, rf, tf).writeToFile(outputPath + "vi");
-		
-		//visualize the value function and policy.
-		simpleValueFunctionVis((ValueFunction)planner, p, initialState, hf, domain);
-		
-		
-		out.println(gamma + "\t" + end);
+		ValueIteration val = (ValueIteration) planner;
+		p.evaluateBehavior(initialState, rf, tf, totalR).writeToFile(outputPath + "vi");
+
+		// visualize the value function and policy.
+//		simpleValueFunctionVis((ValueFunction) planner, p, initialState, hf, domain);
+
+//		out.println(gamma + "\t" + end);
 		outIter.println(gamma + "\t" + val.returnPasses());
 		
+		totalR = p.returnTotalReward();
+	
+		
+		return totalR;
 
 	}
 
-	public void policyIterationExample(String outputPath, Domain domain, State initialState, RewardFunction rf,
+	public double policyIterationExample(String outputPath, Domain domain, State initialState, RewardFunction rf,
 			TerminalFunction tf, HashableStateFactory hf, double gamma, double maxDelta, int maxEvaluationIterations,
-			int maxPolicyIterations, PrintWriter out, PrintWriter outIter) throws Exception{
+			int maxPolicyIterations, PrintWriter out, PrintWriter outIter, PrintWriter rOut) throws Exception{
 		
+		double totalR = 0;
 		double start = System.currentTimeMillis();
 		System.out.println("start: " + start);
 		Planner planner = new PolicyIteration(domain, rf, tf, gamma, hf, maxDelta, maxEvaluationIterations,
 				maxPolicyIterations);
 		Policy p = planner.planFromState(initialState);
 		double end = System.currentTimeMillis() - start;
+		finalPITime = end + finalPITime;
+
 		System.out.println("end: " + end);
 		PolicyIteration pol = (PolicyIteration)planner;
 		
-//		p.evaluateBehavior(initialState, rf, tf).writeToFile(outputPath + "pi");
+		p.evaluateBehavior(initialState, rf, tf, totalR).writeToFile(outputPath + "pi");
 //		simpleValueFunctionVis((ValueFunction)planner, p, initialState, hf, domain);
 		
+		totalR = p.returnTotalReward();
 		
-		out.println(gamma + "\t" + end);
+//		out.println(gamma + "\t" + end);
 		outIter.println(gamma + "\t" + pol.returnIterations());
 		
+		return totalR;
 		
 	}
 	
@@ -610,11 +633,11 @@ public class ExampleGridWorld implements DomainGenerator {
 			double learningRate, SimulatedEnvironment env, PrintWriter out, PrintWriter outIter) {
 		
 		double start = System.currentTimeMillis();
-		LearningAgent agent = new SarsaLam(domain, gamma, hf, 0., learningRate, 1, 0.3);
+		LearningAgent agent = new SarsaLam(domain, gamma, hf, 0., learningRate, 10000, 0.3);
 
 		// run learning for 50 episodes
-		for (int i = 0; i < 50; i++) {
-			EpisodeAnalysis ea = agent.runLearningEpisode(env, 1);
+		for (int i = 0; i < 100; i++) {
+			EpisodeAnalysis ea = agent.runLearningEpisode(env, 10000);
 
 			ea.writeToFile(outputPath + "sarsa_" + i);
 			System.out.println(i + ": " + ea.maxTimeStep());
@@ -625,7 +648,8 @@ public class ExampleGridWorld implements DomainGenerator {
 		}
 		
 		double end = System.currentTimeMillis() - start;
-		out.println(gamma + "\t" + end);
+//		out.println(gamma + "\t" + end);
+		finalSarsaTime = end + finalSarsaTime;
 	}
 	
 	public void experimenterAndPlotter(SimulatedEnvironment env, StateConditionTest goalCondition, RewardFunction rf){
@@ -639,7 +663,7 @@ public class ExampleGridWorld implements DomainGenerator {
 	
 	public void learnPlots(SimulatedEnvironment env, LearningAgentFactory sarsaLearningFactory,
 			LearningAgentFactory sarsaLearningFactory2) {
-		LearningAlgorithmExperimenter exp = new LearningAlgorithmExperimenter(env, 2, 50, sarsaLearningFactory,
+		LearningAlgorithmExperimenter exp = new LearningAlgorithmExperimenter(env, 2, 20, sarsaLearningFactory,
 				sarsaLearningFactory2);
 		exp.setUpPlottingConfiguration(500, 250, 2, 1000, TrialMode.MOSTRECENTANDAVERAGE,
 				PerformanceMetric.CUMULATIVESTEPSPEREPISODE, PerformanceMetric.AVERAGEEPISODEREWARD);
@@ -656,11 +680,13 @@ public class ExampleGridWorld implements DomainGenerator {
 		ExampleGridWorld gen = new ExampleGridWorld();
 		final Domain domain = gen.generateDomain();
 		String outputPath = "output/"; // directory to record results
-		double gamma = 0.99;
+		double gamma = 0.5;
 		double maxDelta = 0.01;
 		int maxEvaluationIterations = 1000;
 		int maxPolicyIterations = 100;
 		double learningRate = 0.1;
+		double totalVIReward = 0;
+		double totalPIReward = 0;
 		
 //		MyGridWorld example = new MyGridWorld();
 		
@@ -700,38 +726,38 @@ public class ExampleGridWorld implements DomainGenerator {
 
 			@Override
 			public LearningAgent generateAgent() {
-				return new QLearning(domain, 0.99, hf, 0.3, 0.1);
+				return new QLearning(domain, 0.99, hf, 0.3, 0.99);
 			}
 		};
 
 		LearningAgentFactory sarsaLearningFactory = new LearningAgentFactory() {
 			@Override
 			public String getAgentName() {
-				return "L = 0.1";
+				return "Q = 0";
 			}
 
 			@Override
 			public LearningAgent generateAgent() {
-				return new SarsaLam(domain, 0.99, hf, 0.0, 0.1, 1,  1);
+				return new SarsaLam(domain, 0.99, hf, 0.0, 0.9, 1,  1);
 			}
 		};
 		
 		LearningAgentFactory sarsaLearningFactory2 = new LearningAgentFactory() {
 			@Override
 			public String getAgentName() {
-				return "L = 0.9";
+				return "Q = 30000";
 			}
 
 			@Override
 			public LearningAgent generateAgent() {
-				return new SarsaLam(domain, 0.99, hf, 0.0, 0.9, 1, 1);
+				return new SarsaLam(domain, 0.99, hf, 30000.0, 0.9, 1, 1);
 			}
 		};
 		
 		
 		double start = System.currentTimeMillis();
 		
-		gen.learnPlots(env, sarsaLearningFactory, sarsaLearningFactory2);
+//		gen.learnPlots(env, sarsaLearningFactory, sarsaLearningFactory2);
 		
 //		gen.learnPlots(env, qLearningFactory, qLearningFactory);
 		
@@ -744,19 +770,42 @@ public class ExampleGridWorld implements DomainGenerator {
 		PrintWriter out4 = new PrintWriter("PIIter.dat");
 		PrintWriter out5 = new PrintWriter("SarsaTime.dat");
 		PrintWriter out6 = new PrintWriter("SarsaIter.dat");
+		PrintWriter out7 = new PrintWriter("VIReward.dat");
+		PrintWriter out8 = new PrintWriter("PIReward.dat");
 		
 		
-//		for (int i = 0; i < 6; i++) {
-//
-//			gen.valueIterationExample(outputPath, domain, initialState, rf, tf, hf, gamma, out1, out3);
-//
-//			gen.policyIterationExample(outputPath, domain, initialState, rf, tf, hf, gamma, maxDelta,
-//					maxEvaluationIterations, maxPolicyIterations, out2, out4);
-//		
-//			gen.sarsaLearningExample(outputPath, domain, hf, gamma, learningRate, env, out5, out6);
-//			
-//			gamma = gamma + 0.1;
-//		}
+		for (int i = 0; i < 6; i++) {
+
+			for (int m = 0; m < 5; m++) {
+				totalVIReward = gen.valueIterationExample(outputPath, domain, initialState, rf, tf, hf, gamma, out1,
+						out3, out7) + totalVIReward;
+
+				totalPIReward = gen.policyIterationExample(outputPath, domain, initialState, rf, tf, hf, gamma,
+						maxDelta, maxEvaluationIterations, maxPolicyIterations, out2, out4, out8) + totalPIReward;
+				
+//				 gen.sarsaLearningExample(outputPath, domain, hf, gamma,
+//				 learningRate, env, out5, out6);
+
+			}
+
+			
+//			out7.println(gen.finalVITime / 10 + "\t" + totalVIReward / 10);
+//			out8.println(gen.finalPITime / 10 + "\t" + totalPIReward / 10);
+			out7.println(gamma + "\t" + totalVIReward / 10);
+			out8.println(gamma  + "\t" + totalPIReward / 10);
+			out1.println(gamma + "\t" + finalVITime/10);
+			out2.println(gamma + "\t" + finalPITime/10);
+			out5.println(gamma + "\t" + finalSarsaTime/10);
+			gamma = gamma + 0.1;
+			totalVIReward = 0;
+			totalVIReward = 0;
+			totalPIReward = 0;
+			gen.finalVITime = 0;
+			gen.finalPITime = 0;
+			gen.finalSarsaTime = 0;
+			
+
+		}
 		
 		out1.close();
 		out2.close();
@@ -764,7 +813,9 @@ public class ExampleGridWorld implements DomainGenerator {
 		out4.close();
 		out5.close();
 		out6.close();
-		
+		out7.close();
+		out8.close();
+
 		
 
 //		 exp.addKeyAction("w", ACTIONNORTH);
