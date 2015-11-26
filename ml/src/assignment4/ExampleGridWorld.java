@@ -783,8 +783,8 @@ public class ExampleGridWorld implements DomainGenerator {
 //						out3, out7) + totalVIReward;
 //				
 //
-				totalPIReward = gen.policyIterationExample(outputPath, domain, initialState, rf, tf, hf, gamma,
-						maxDelta, maxEvaluationIterations, maxPolicyIterations, out2, out4, out8) + totalPIReward;
+//				totalPIReward = gen.policyIterationExample(outputPath, domain, initialState, rf, tf, hf, gamma,
+//						maxDelta, maxEvaluationIterations, maxPolicyIterations, out2, out4, out8) + totalPIReward;
 				
 //				 gen.sarsaLearningExample(outputPath, domain, hf, gamma,
 //				 learningRate, env, out5, out6);
@@ -822,12 +822,12 @@ public class ExampleGridWorld implements DomainGenerator {
 
 		
 
-//		 exp.addKeyAction("w", ACTIONNORTH);
-//		 exp.addKeyAction("s", ACTIONSOUTH);
-//		 exp.addKeyAction("d", ACTIONEAST);
-//		 exp.addKeyAction("a", ACTIONWEST);
+		 exp.addKeyAction("w", ACTIONNORTH);
+		 exp.addKeyAction("s", ACTIONSOUTH);
+		 exp.addKeyAction("d", ACTIONEAST);
+		 exp.addKeyAction("a", ACTIONWEST);
 
-//		exp.initGUI();
+		exp.initGUI();
 
 	}
 
