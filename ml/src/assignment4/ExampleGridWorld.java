@@ -525,6 +525,7 @@ public class ExampleGridWorld implements DomainGenerator {
 			if (ax == this.goalX && ay == this.goalY) {
 				
 				return 30000.;
+//				return 100.;
 			}
 			
 
@@ -578,7 +579,7 @@ public class ExampleGridWorld implements DomainGenerator {
 		p.evaluateBehavior(initialState, rf, tf, totalR);
 
 		// visualize the value function and policy.
-//		simpleValueFunctionVis((ValueFunction) planner, p, initialState, hf, domain);
+		simpleValueFunctionVis((ValueFunction) planner, p, initialState, hf, domain);
 
 //		out.println(gamma + "\t" + end);
 		outIter.println(gamma + "\t" + val.returnPasses());
@@ -607,8 +608,8 @@ public class ExampleGridWorld implements DomainGenerator {
 		PolicyIteration pol = (PolicyIteration)planner;
 		
 //		p.evaluateBehavior(initialState, rf, tf, totalR).writeToFile(outputPath + "pi");
-//		p.evaluateBehavior(initialState, rf, tf, totalR);
-//		simpleValueFunctionVis((ValueFunction)planner, p, initialState, hf, domain);
+		p.evaluateBehavior(initialState, rf, tf, totalR);
+		simpleValueFunctionVis((ValueFunction)planner, p, initialState, hf, domain);
 		
 		totalR = p.returnTotalReward();
 		
@@ -691,16 +692,7 @@ public class ExampleGridWorld implements DomainGenerator {
 		double totalVIReward = 0;
 		double totalPIReward = 0;
 		
-//		MyGridWorld example = new MyGridWorld();
-		
-//		Domain domain = example.domain;
-		
-//		State initialState = example.initialState;
-
 		State initialState = ExampleGridWorld.getExampleState(domain);
-		
-
-
 		RewardFunction rf = new ExampleRF(87, 21);
 		TerminalFunction tf = new ExampleTF(87, 21);
 //		RewardFunction rf = new ExampleRF(10, 10);
@@ -709,17 +701,11 @@ public class ExampleGridWorld implements DomainGenerator {
 
 		SimulatedEnvironment env = new SimulatedEnvironment(domain, rf, tf, initialState);
 
-		// TerminalExplorer exp = new TerminalExplorer(domain, env);
-		// exp.explore();
 		final HashableStateFactory hf = new SimpleHashableStateFactory();
 
 		Visualizer v = gen.getVisualizer();
 		
 		VisualExplorer exp = new VisualExplorer(domain, env, v);
-		
-		/**
-		 * Create factories for Q-learning agent and SARSA agent to compare
-		 */
 
 		LearningAgentFactory qLearningFactory = new LearningAgentFactory() {
 			@Override
@@ -741,25 +727,31 @@ public class ExampleGridWorld implements DomainGenerator {
 
 			@Override
 			public LearningAgent generateAgent() {
-				return new SarsaLam(domain, 0.99, hf, 0.0, 0.01, 1000,  1);
+				return new SarsaLam(domain, 0.99, hf, 0.0, 0.9, 1000,  1);
+//				return new SarsaLam(domain, 0.99, hf, 0.0, 0.1, 1000, 1);
 			}
 		};
 		
 		LearningAgentFactory sarsaLearningFactory2 = new LearningAgentFactory() {
 			@Override
 			public String getAgentName() {
-				return "Q = 30000";
+				return "Q = 100";
 			}
 
 			@Override
 			public LearningAgent generateAgent() {
-				return new SarsaLam(domain, 0.99, hf, 100.0, 0.99, 1000, 1);
+				return new SarsaLam(domain, 0.99, hf, 100.0, 0.9, 1000, 1);
+//				return new SarsaLam(domain, 0.99, hf, 30000.0, 0.9, 1000, 1);
 			}
 		};
 		
 		
 		double start = System.currentTimeMillis();
 		
+		
+		/*
+		 * generated the plots for SARSA and Q-learning
+		 */
 //		gen.learnPlots(env, sarsaLearningFactory, sarsaLearningFactory2);
 		
 //		gen.learnPlots(env, qLearningFactory, qLearningFactory);
@@ -778,6 +770,9 @@ public class ExampleGridWorld implements DomainGenerator {
 		PrintWriter out9 = new PrintWriter("PIInnerIter.dat");
 		
 		
+		/*
+		 * This generated the data files for PI, VI, and SARSA.  It also generates the policy maps and grid world visual
+		 */
 		for (int i = 0; i < 6; i++) {
 
 //			for (int m = 0; m < 10; m++) {
@@ -796,11 +791,12 @@ public class ExampleGridWorld implements DomainGenerator {
 			
 //			out7.println(gen.finalVITime / 10 + "\t" + totalVIReward / 10);
 //			out8.println(gen.finalPITime / 10 + "\t" + totalPIReward / 10);
-			out7.println(gamma + "\t" + totalVIReward / 5);
-			out8.println(gamma  + "\t" + totalPIReward / 5);
+			out7.println(gamma + "\t" + totalVIReward / 10);
+			out8.println(gamma  + "\t" + totalPIReward / 10);
 			out1.println(gamma + "\t" + finalVITime/10);
 			out2.println(gamma + "\t" + finalPITime/10);
 			out5.println(gamma + "\t" + finalSarsaTime/10);
+			//change this to .001 if you are trying to generate data files for the large grid world
 			gamma = gamma + 0.1;
 			totalVIReward = 0;
 			totalVIReward = 0;
@@ -829,7 +825,7 @@ public class ExampleGridWorld implements DomainGenerator {
 //		 exp.addKeyAction("d", ACTIONEAST);
 //		 exp.addKeyAction("a", ACTIONWEST);
 
-//		exp.initGUI();
+		exp.initGUI();
 
 	}
 
